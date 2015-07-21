@@ -26,6 +26,29 @@ public struct Entity {
   unowned EntityManager manager;
   uint id;
 
+  /* Access components of entity.  */
+  public
+  unowned T?
+  get<T>() {
+    return manager.get_component_col<T>().get(this);
+  }
+  public
+  unowned T
+  attach<T>() {
+    return manager.get_component_col<T>().attach(this);
+  }
+  public
+  void
+  detach<T>() {
+    manager.get_component_col<T>().detach(this);
+  }
+
+  /* Destroy entity.  */
+  public
+  void
+  destroy() {
+    manager.destroy(this);
+  }
 }
 
 }
