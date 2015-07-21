@@ -22,10 +22,10 @@ entity.vala - Define the Entity type.
 
 namespace VEX{
 
-[SimpleType]
 public struct Entity {
   unowned EntityManager manager;
   uint id;
+
 }
 
 }
