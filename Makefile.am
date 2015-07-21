@@ -6,7 +6,8 @@ include_HEADERS = vex.h
 lib_LTLIBRARIES = libvex.la
 
 libvex_la_SOURCES = \
-  src/entity.vala
+  src/entity.vala \
+  src/manager.vala
 
 libvex_la_CFLAGS = \
   $(GEE_CFLAGS) \
