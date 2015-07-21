@@ -30,10 +30,17 @@ using Gee;
 
 namespace VEX {
 
-internal abstract
+public abstract
 class ComponentColBase {
   internal abstract
   Type component_type();
+
+  internal
+  unowned EntityManager manager;
+
+  internal ComponentColBase(EntityManager manager) {
+    this.manager = manager;
+  }
 
   Component?[] components;
 
@@ -42,7 +49,7 @@ class ComponentColBase {
      we decrement the ID by 1 before using
      it to index.  */
 
-  protected
+  internal
   unowned Component?
   get_by_id(uint raw_id) {
 
@@ -59,7 +66,7 @@ class ComponentColBase {
     }
   }
 
-  protected
+  internal
   unowned Component
   attach_by_id(uint raw_id) {
 
@@ -82,7 +89,7 @@ class ComponentColBase {
     }
   }
 
-  protected
+  internal
   void
   detach_by_id (uint raw_id) {
 
