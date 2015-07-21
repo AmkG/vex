@@ -7,6 +7,7 @@ lib_LTLIBRARIES = libvex.la
 
 libvex_la_SOURCES = \
   src/component.vala \
+  src/component_col.vala \
   src/component_col_base.vala \
   src/entity.vala \
   src/manager.vala
