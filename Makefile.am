@@ -6,6 +6,7 @@ include_HEADERS = vex.h
 lib_LTLIBRARIES = libvex.la
 
 libvex_la_SOURCES = \
+  src/component.vala \
   src/entity.vala \
   src/manager.vala
 
