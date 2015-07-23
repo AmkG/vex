@@ -23,7 +23,7 @@ entity.vala - Define the Entity and EntityAllocator types.
 namespace VEX {
 
 [Compact]
-[CCode (ref_function = "vex_entity_ref", unref_function = "vex_entity_unref")]
+[CCode (ref_function = "vex_entity_xref", unref_function = "vex_entity_unref")]
 public
 class Entity {
   /* Entity ID.  */
@@ -60,7 +60,7 @@ class Entity {
   /* Ref and unref functions.  */
   internal
   unowned Entity
-  ref() {
+  xref() {
     GLib.AtomicInt.add (ref _rc, 1);
     return this;
   }
@@ -79,7 +79,25 @@ class Entity {
   internal
   extern void free();
 
-  /* TODO: Other public interface.  */
+
+
+  /* Client methods.  */
+
+  public
+  T?
+  ref<T>() {
+    return manager.get_component_col<T>().ref(this);
+  }
+  public
+  T
+  attach<T>() {
+    return manager.get_component_col<T>().attach(this);
+  }
+  public
+  void
+  detach<T>() {
+    manager.get_component_col<T>().detach(this);
+  }
 }
 
 public
