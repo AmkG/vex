@@ -45,8 +45,8 @@ class ComponentColBase {
   Component?[] components;
 
   internal
-  unowned Component?
-  get_by_id(uint id) {
+  Component?
+  ref_by_id(uint id) {
     lock(components) {
       if (id < components.length) {
         return components[id];
@@ -57,7 +57,7 @@ class ComponentColBase {
   }
 
   internal
-  unowned Component
+  Component
   attach_by_id(uint id, owned Entity e) {
     lock(components) {
       /* Ensure sufficient size.  */

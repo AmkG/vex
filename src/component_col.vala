@@ -44,13 +44,13 @@ class ComponentCol<T> : ComponentColBase {
   }
 
   public
-  unowned T?
-  get(Entity e) {
+  T?
+  ref(Entity e) {
     assert (e.manager == manager);
-    return (T) get_by_id (e.id);
+    return (T) ref_by_id (e.id);
   }
   public
-  unowned T
+  T
   attach(owned Entity e) {
     assert (e.manager == manager);
     return (T) attach_by_id (e.id, (owned) e);
