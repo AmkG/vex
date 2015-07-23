@@ -9,6 +9,7 @@ libvex_la_SOURCES = \
   src/component.vala \
   src/component_col.vala \
   src/component_col_base.vala \
+  src/component_col_iterator.vala \
   src/entity.vala \
   src/manager.vala
 

@@ -88,6 +88,13 @@ public class EntityManager {
     }
 
   }
+
+  /* Iterate over All entities.  */
+  public
+  ComponentColIterator
+  iterator() {
+    return get_component_col<All>().iterator();
+  }
 }
 
 /* Component that represents All entities.  */

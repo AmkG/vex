@@ -108,6 +108,18 @@ class ComponentColBase {
       }
     }
   }
+
+  /* Allow iteration over a component column.  */
+
+  public
+  ComponentColIterator
+  iterator() {
+    lock (components) {
+      return ComponentColIterator()
+        { c = list
+        };
+    }
+  }
 }
 
 }
