@@ -68,7 +68,7 @@ class ComponentColBase {
       /* Construct if not existent.  */
       if (components[id] == null) {
         components[id] = (Component) Object.new (component_type ());
-        components[id].set_entity((owned) e);
+        components[id].entity = (owned) e;
       }
 
       return (!) components[id];

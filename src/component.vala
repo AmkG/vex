@@ -23,18 +23,8 @@ namespace VEX {
 
 public abstract
 class Component : Object {
-  Entity? _entity = null;
+  internal Entity? entity = null;
 
-  internal
-  void
-  set_entity(owned Entity entity) {
-    lock (this._entity) { this._entity = entity; }
-  }
-  internal
-  Entity?
-  get_entity() {
-    lock (this._entity) { return this._entity; }
-  }
 }
 
 }
