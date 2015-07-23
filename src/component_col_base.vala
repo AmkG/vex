@@ -43,6 +43,7 @@ class ComponentColBase {
   }
 
   Component?[] components;
+  Component? list;
 
   internal
   Component?
@@ -67,8 +68,15 @@ class ComponentColBase {
 
       /* Construct if not existent.  */
       if (components[id] == null) {
-        components[id] = (Component) Object.new (component_type ());
-        components[id].entity = (owned) e;
+        Component c = (Component) Object.new (component_type ());
+        c.entity = (owned) e;
+        c.prev = null;
+
+        list.prev = c;
+        c.next = (owned) list;
+        list = c;
+
+        components[id] = (owned) c;
       }
 
       return (!) components[id];
@@ -80,7 +88,24 @@ class ComponentColBase {
   detach_by_id (uint id) {
     lock(components) {
       if (id >= components.length) return;
+      Component? c = components[id];
       components[id] = null;
+      if (c != null) {
+        /* Unlink the node.  */
+        if (c.prev == null) {
+          list = c.next;
+        } else {
+          c.prev.next = c.next;
+        }
+        if (c.next != null) {
+          c.next.prev = c.prev;
+        }
+
+        /* Clear out the component.  */
+        c.entity = null;
+        c.prev = null;
+        /* Retain next, in case a live iterator has this component.  */
+      }
     }
   }
 }

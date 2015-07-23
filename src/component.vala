@@ -25,6 +25,9 @@ public abstract
 class Component : Object {
   internal Entity? entity = null;
 
+  /* Used to form a list of components.  */
+  internal unowned Component? prev = null;
+  internal Component? next = null;
 }
 
 }
