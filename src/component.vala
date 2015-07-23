@@ -27,7 +27,7 @@ class Component : Object {
 
   internal
   void
-  set_entity(Entity entity) {
+  set_entity(owned Entity entity) {
     lock (this._entity) { this._entity = entity; }
   }
   internal

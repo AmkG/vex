@@ -51,9 +51,9 @@ class ComponentCol<T> : ComponentColBase {
   }
   public
   unowned T
-  attach(Entity e) {
+  attach(owned Entity e) {
     assert (e.manager == manager);
-    return (T) attach_by_id (e.id, e);
+    return (T) attach_by_id (e.id, (owned) e);
   }
   public
   void
