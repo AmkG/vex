@@ -44,19 +44,9 @@ class ComponentColBase {
 
   Component?[] components;
 
-  /* Entity ID's start at 1 - entity 0 is
-     an invalid entity.  In the below,
-     we decrement the ID by 1 before using
-     it to index.  */
-
   internal
   unowned Component?
-  get_by_id(uint raw_id) {
-
-    assert(raw_id != 0);
-
-    var id = raw_id - 1;
-
+  get_by_id(uint id) {
     lock(components) {
       if (id < components.length) {
         return components[id];
@@ -68,12 +58,7 @@ class ComponentColBase {
 
   internal
   unowned Component
-  attach_by_id(uint raw_id) {
-
-    assert(raw_id != 0);
-
-    var id = raw_id - 1;
-
+  attach_by_id(uint id) {
     lock(components) {
       /* Ensure sufficient size.  */
       if (id >= components.length) {
@@ -91,12 +76,7 @@ class ComponentColBase {
 
   internal
   void
-  detach_by_id (uint raw_id) {
-
-    assert(raw_id != 0);
-
-    var id = raw_id - 1;
-
+  detach_by_id (uint id) {
     lock(components) {
       if (id >= components.length) return;
       components[id] = null;

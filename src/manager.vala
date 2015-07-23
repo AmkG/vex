@@ -33,14 +33,12 @@ either null, or a component.
 
 public class EntityManager {
   public EntityManager() {
-    next_free = 1;
-    free_list = new ArrayList<uint>();
+    allocator = new EntityAllocator();
+    columns = new HashMap<Type, ComponentColBase>();
   }
 
-  /* The free entity list.  Entity 0 is not valid.  */
-  uint next_free;
-  ArrayList<uint> free_list;
-
+  /* The entity allocator.  */
+  EntityAllocator allocator;
   /* The entity table.  */
   HashMap<Type, ComponentColBase> columns;
 
@@ -69,26 +67,7 @@ public class EntityManager {
   public
   Entity
   create () {
-    /* First, get from free list.  */
-    uint rv;
-    lock (free_list) {
-      if (free_list.size == 0) {
-        rv = next_free;
-        ++next_free;
-      } else {
-        rv = free_list.remove_at(free_list.size - 1);
-      }
-    }
- 
-    Entity e = Entity()
-      { manager = this
-      , id = rv
-      };
-
-    /* Now attach All component.  */
-    get_component_col<All>().attach(e);
-
-    return e;
+    return allocator.alloc();
   }
 
   /* Destroy an existing entity.  */
@@ -108,14 +87,6 @@ public class EntityManager {
       col.detach_by_id(id);
     }
 
-    /* Add to freelist.  */
-    lock (free_list) {
-      free_list.add (id);
-    }
-
-    /* Clear out the entity.  */
-    e.manager = null;
-    e.id = 0;
   }
 }
 

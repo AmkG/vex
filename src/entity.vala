@@ -1,5 +1,5 @@
 /*
-entity.vala - Define the Entity type.
+entity.vala - Define the Entity and EntityAllocator types.
 
     Copyright 2015 Alan Manuel K. Gloria
 
@@ -20,34 +20,161 @@ entity.vala - Define the Entity type.
 
 */
 
-namespace VEX{
+namespace VEX {
 
-public struct Entity {
-  unowned EntityManager manager;
-  uint id;
+[Compact]
+[CCode (ref_function = "vex_entity_ref", unref_function = "vex_entity_unref")]
+public
+class Entity {
+  /* Entity ID.  */
+  public int id;
+  /* The manager that manages this.  */
+  public unowned EntityManager manager;
 
-  /* Access components of entity.  */
-  public
-  unowned T?
-  get<T>() {
-    return manager.get_component_col<T>().get(this);
+  /* Refcount for this object.  */
+  public int _rc;
+  /* The allocator that manages this.
+
+     We use an owning pointer to EntityAllocator because
+     the allocator must live longer than the Entities
+     it manages.  */
+  public EntityAllocator _allocator;
+  /* Used in the EntityAllocator to maintain the freelist.  */
+  public void* _next;
+
+  /* Arrange so that the "normal" new Entity()
+     expression calls Vex.EntityAllocator.alloc().  */
+  [CCode (cname = "vex_entity_allocator_alloc")]
+  internal extern Entity(EntityAllocator allocator);
+
+  /* When the EntityAllocator's freelist is empty,
+     use this constructor.  */
+  internal
+  Entity.make_fresh (int id, EntityAllocator allocator) {
+    this.id = id;
+    this._rc = 1;
+    this._allocator = allocator;
+    this._next = null;
   }
-  public
-  unowned T
-  attach<T>() {
-    return manager.get_component_col<T>().attach(this);
+
+  /* Ref and unref functions.  */
+  internal
+  unowned Entity
+  ref() {
+    GLib.AtomicInt.add (ref _rc, 1);
+    return this;
   }
-  public
+  internal
   void
-  detach<T>() {
-    manager.get_component_col<T>().detach(this);
+  unref() {
+    if (GLib.AtomicInt.dec_and_test (ref _rc)) {
+      _allocator.dealloc(this);
+    }
   }
 
-  /* Destroy entity.  */
-  public
+  /* When an EntityAllocator is destroyed,
+     use this to free all entity memory.
+
+     Vala automatically creates this function.  */
+  internal
+  extern void free();
+
+  /* TODO: Other public interface.  */
+}
+
+public
+class EntityAllocator {
+  /* The next free ID.  */
+  int next_free;
+  /* Entity objects that have been freed.  */
+  void* freelist;
+
+  internal
+  EntityAllocator() {
+    next_free = 0;
+    freelist = null;
+  }
+
+  private
+  int
+  alloc_id () {
+    int id = 0;
+    int next = 0;
+    do {
+      id = GLib.AtomicInt.get(ref next_free);
+      next = id + 1;
+    } while (!GLib.AtomicInt.compare_and_exchange( ref next_free
+                                                 , id
+                                                 , next
+                                                 )
+            );
+    return id;
+  }
+
+  internal
+  Entity
+  alloc() {
+    /* Try to get from the freelist; if not, create fresh.  */
+    void* cur = null;
+    void* next = null;
+    do {
+      cur = GLib.AtomicPointer.get(&freelist);
+      if (cur == null) {
+        /* Freelist empty!  */
+        return new Entity.make_fresh (alloc_id(), this);
+      } else {
+        next = ((Entity) cur)._next;
+      }
+    } while (!GLib.AtomicPointer.compare_and_exchange ( &freelist
+                                                      , cur
+                                                      , next
+                                                      )
+            );
+    /* Reconnect the entity's allocator pointer to this.  */
+    ((Entity) cur)._allocator = this;
+
+    /* The return below should increment (correctly) the refcount.  */
+    return (Entity) cur;
+  }
+
+  internal
   void
-  destroy() {
-    manager.destroy(this);
+  dealloc (Entity e) {
+    /* It's possible for the following to occur:
+
+       1.  Someone decides to dispose the EntityManager holding
+           this EntityAllocator.
+       2.  Somebody else is still looking at some Entity, which
+           keeps this EntityAllocator alive.
+       3.  That someone else disposes the Entity it was working
+           on.
+
+       This may cause this EntityAllocator to be freed during
+       execution of this method.  To prevent that, we
+       keep the self variable around during the method call.  */
+    EntityAllocator self = this;
+
+    /* Detach the entity->allocator pointer.  */
+    e._allocator = null;
+
+    void *cur = null;
+    void *next = (void*) e;
+    do {
+      cur = GLib.AtomicPointer.get(&self.freelist);
+      e._next = cur;
+    } while (!GLib.AtomicPointer.compare_and_exchange (&self.freelist
+                                                      , cur
+                                                      , next
+                                                      )
+            );
+  }
+
+  ~EntityAllocator() {
+    while (freelist != null) {
+      unowned Entity e = (Entity) freelist;
+      freelist = e._next;
+      e.free();
+    }
   }
 }
 
