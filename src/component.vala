@@ -22,6 +22,19 @@ component.vala - Define the Component base class.
 namespace VEX {
 
 public abstract
-class Component : Object { }
+class Component : Object {
+  Entity? _entity = null;
+
+  internal
+  void
+  set_entity(Entity entity) {
+    lock (this._entity) { this._entity = entity; }
+  }
+  internal
+  Entity?
+  get_entity() {
+    lock (this._entity) { return this._entity; }
+  }
+}
 
 }

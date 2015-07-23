@@ -58,7 +58,7 @@ class ComponentColBase {
 
   internal
   unowned Component
-  attach_by_id(uint id) {
+  attach_by_id(uint id, Entity e) {
     lock(components) {
       /* Ensure sufficient size.  */
       if (id >= components.length) {
@@ -68,6 +68,7 @@ class ComponentColBase {
       /* Construct if not existent.  */
       if (components[id] == null) {
         components[id] = (Component) Object.new (component_type ());
+        components[id].set_entity(e);
       }
 
       return (!) components[id];
