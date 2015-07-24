@@ -35,6 +35,8 @@ class ComponentColBase {
   internal abstract
   Type component_type();
 
+  RWLock rwl;
+
   internal
   unowned EntityManager manager;
 
@@ -48,19 +50,25 @@ class ComponentColBase {
   internal
   Component?
   ref_by_id(uint id) {
-    lock(components) {
+    Component? rv;
+
+    rwl.reader_lock(); {
       if (id < components.length) {
-        return components[id];
+        rv = components[id];
       } else {
-        return null;
+        rv = null;
       }
-    }
+    } rwl.reader_unlock();
+
+    return rv;
   }
 
   internal
   Component
   attach_by_id(uint id, owned Entity e) {
-    lock(components) {
+    Component? rv = null;
+
+    rwl.writer_lock(); try {
       /* Ensure sufficient size.  */
       if (id >= components.length) {
         components.resize((int) id + 1);
@@ -79,33 +87,43 @@ class ComponentColBase {
         components[id] = (owned) c;
       }
 
-      return (!) components[id];
+      rv = components[id];
+
+    } finally {
+      rwl.writer_unlock();
     }
+    return (!) rv;
   }
 
   internal
   void
   detach_by_id (uint id) {
-    lock(components) {
-      if (id >= components.length) return;
-      Component? c = components[id];
-      components[id] = null;
-      if (c != null) {
-        /* Unlink the node.  */
-        if (c.prev == null) {
-          list = c.next;
-        } else {
-          c.prev.next = c.next;
-        }
-        if (c.next != null) {
-          c.next.prev = c.prev;
-        }
+    rwl.writer_lock(); try {
+      /* If ID is within the components length,
+         check for detachability.  */
+      if (id < components.length) {
+        /* Detach.  */
+        Component? c = (owned) components[id];
 
-        /* Clear out the component.  */
-        c.entity = null;
-        c.prev = null;
-        /* Retain next, in case a live iterator has this component.  */
+        /* Unlink the node in the list.  */
+        if (c != null) {
+          if (c.prev == null) {
+            list = c.next;
+          } else {
+            c.prev.next = c.next;
+          }
+          if (c.next != null) {
+            c.next.prev = c.prev;
+          }
+
+          /* Clear out the component.  */
+          c.entity = null;
+          c.prev = null;
+          /* Retain next, in case a live iterator has this component.  */
+        }
       }
+    } finally {
+      rwl.writer_unlock();
     }
   }
 
@@ -114,11 +132,14 @@ class ComponentColBase {
   public
   ComponentColIterator
   iterator() {
-    lock (components) {
-      return ComponentColIterator()
-        { c = list
-        };
-    }
+    ComponentColIterator rv = ComponentColIterator();
+    rv.rwl = &rwl;
+
+    rwl.reader_lock(); {
+      rv.c = list;
+    } rwl.reader_unlock();
+
+    return rv;
   }
 }
 

@@ -26,22 +26,28 @@ namespace VEX {
 public
 struct ComponentColIterator {
   Component? c;
+  RWLock* rwl;
+
   public
   Entity?
   next_value() {
     if (c == null) {
       return null;
     }
-    /* Skip over entities that got detached while
-       we were iterating.  */
-    while (c.entity == null) {
-      c = c.next;
-      if (c == null) {
-        return null;
+
+    Entity? rv = null;
+
+    rwl->reader_lock(); {
+      /* Skip over detached components.  */
+      while (c != null && c.entity == null) {
+        c = c.next;
       }
-    }
-    var rv = c.entity;
-    c = c.next;
+      /* Get the current value and move forward.  */
+      if (c != null) {
+        rv = c.entity;
+        c = c.next;
+      }
+    } rwl->reader_unlock();
     return rv;
   }
 }
