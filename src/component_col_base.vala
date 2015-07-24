@@ -35,7 +35,7 @@ class ComponentColBase {
   internal abstract
   Type component_type();
 
-  RWLock rwl;
+  RWLock rwl = RWLock();
 
   internal
   unowned EntityManager manager;
