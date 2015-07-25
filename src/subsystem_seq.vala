@@ -33,6 +33,14 @@ class SubsystemSeq : Subsystem {
   }
 
   protected override
+  void init() {
+    foreach (var subsystem in subsystems) {
+      subsystem.manager = manager;
+      subsystem.init();
+    }
+  }
+
+  protected override
   void pre_run() {
     foreach (var subsystem in subsystems) {
       subsystem.pre_run();
