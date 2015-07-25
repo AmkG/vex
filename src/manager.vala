@@ -103,6 +103,6 @@ public class EntityManager {
 }
 
 /* Component that represents All entities.  */
-public class All : Component { }
+internal class All : Component { }
 
 }

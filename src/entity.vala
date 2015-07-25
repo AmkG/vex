@@ -105,6 +105,12 @@ class Entity {
   destroy() {
     manager.destroy(this);
   }
+
+  public
+  bool
+  is_live() {
+    return manager.get_component_col<All>().ref(this) != null;
+  }
 }
 
 public
