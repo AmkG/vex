@@ -42,7 +42,8 @@ ACLOCAL_AMFLAGS = -I m4
 ###############################################################################
 
 check_PROGRAMS = \
-  test/t001
+  test/t001 \
+  test/t002
 check_VALAFLAGS = \
   --vapidir=$(top_srcdir) \
   --pkg vex
@@ -58,4 +59,9 @@ test_t001_SOURCES   = test/001.vala
 test_t001_VALAFLAGS = $(check_VALAFLAGS)
 test_t001_CFLAGS    = $(check_CFLAGS)
 test_t001_LDADD     = $(check_LDADD)
+
+test_t002_SOURCES   = test/002.vala
+test_t002_VALAFLAGS = $(check_VALAFLAGS)
+test_t002_CFLAGS    = $(check_CFLAGS)
+test_t002_LDADD     = $(check_LDADD)
 
