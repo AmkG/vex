@@ -99,6 +99,12 @@ class Entity {
   detach<T>() {
     manager.get_component_col<T>().detach(this);
   }
+
+  public
+  void
+  destroy() {
+    manager.destroy(this);
+  }
 }
 
 public
