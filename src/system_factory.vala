@@ -65,6 +65,11 @@ class SystemFactoryTop {
     s.lib_init();
     return new System(s);
   }
+  public
+  System
+  run_<T> () {
+    return run ((Subsystem) Object.new(typeof(T)));
+  }
 
   public
   SystemFactorySeq<System>
