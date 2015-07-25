@@ -80,7 +80,9 @@ class ComponentColBase {
         c.entity = (owned) e;
         c.prev = null;
 
-        list.prev = c;
+        if (list != null) {
+          list.prev = c;
+        }
         c.next = (owned) list;
         list = c;
 
