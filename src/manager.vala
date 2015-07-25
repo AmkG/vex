@@ -67,7 +67,12 @@ public class EntityManager {
   public
   Entity
   create () {
-    return allocator.alloc();
+    Entity e = allocator.alloc();
+
+    e.manager = this;
+    get_component_col<All>().attach(e);
+
+    return e;
   }
 
   /* Destroy an existing entity.  */
