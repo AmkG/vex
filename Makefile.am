@@ -38,3 +38,24 @@ libvex_la_VALAFLAGS = \
   --target-glib=2.32
 
 ACLOCAL_AMFLAGS = -I m4
+
+###############################################################################
+
+check_PROGRAMS = \
+  test/t001
+check_VALAFLAGS = \
+  --vapidir=$(top_srcdir) \
+  --pkg vex
+check_CFLAGS = \
+  $(GLIB2_CFLAGS)
+check_LDADD = \
+  libvex.la \
+  $(GLIB2_LIBS)
+
+TESTS = $(check_PROGRAMS)
+
+test_t001_SOURCES   = test/001.vala
+test_t001_VALAFLAGS = $(check_VALAFLAGS)
+test_t001_CFLAGS    = $(check_CFLAGS)
+test_t001_LDADD     = $(check_LDADD)
+
