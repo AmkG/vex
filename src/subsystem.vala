@@ -60,7 +60,14 @@ be aware of the following:
 
 public abstract
 class Subsystem : Object {
-  public EntityManager manager { get; construct; }
+  /* Provide access to the manager of this
+     subsystem.
+
+     This property is not yet valid in the construct
+     block; if you need access to the manager
+     while doing some initialization, override the
+     init() virtual method.  */
+  EntityManager? manager { public get; internal set; }
 
   internal unowned SubsystemRunner? runner = null;
 
@@ -80,19 +87,26 @@ class Subsystem : Object {
   }
 
   protected virtual
+  void init() { }
+
+  protected virtual
   void pre_run() {}
   protected abstract
   void run();
   protected virtual
   void post_run() {}
 
-  internal
+  internal inline
+  void
+  lib_init() { this.init(); }
+
+  internal inline
   void
   lib_pre_run() { this.pre_run(); }
-  internal
+  internal inline
   void
   lib_run() { this.run(); }
-  internal
+  internal inline
   void
   lib_post_run() { this.post_run(); }
 }
