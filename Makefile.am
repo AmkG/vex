@@ -45,7 +45,8 @@ check_PROGRAMS = \
   test/t001 \
   test/t002 \
   test/t003 \
-  test/t004
+  test/t004 \
+  test/t005
 check_VALAFLAGS = \
   --vapidir=$(top_srcdir) \
   --pkg vex
@@ -77,4 +78,9 @@ test_t004_SOURCES   = test/004.vala
 test_t004_VALAFLAGS = $(check_VALAFLAGS)
 test_t004_CFLAGS    = $(check_CFLAGS)
 test_t004_LDADD     = $(check_LDADD)
+
+test_t005_SOURCES   = test/005.vala
+test_t005_VALAFLAGS = $(check_VALAFLAGS)
+test_t005_CFLAGS    = $(check_CFLAGS)
+test_t005_LDADD     = $(check_LDADD)
 
