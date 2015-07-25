@@ -48,6 +48,7 @@ class System : Object {
     SubsystemRunner runner = new SubsystemRunner(tp);
     main.runner = runner;
     main.lib_run();
+    runner.wait_completion();
     main.runner = null;
     runner = null;
 
