@@ -85,6 +85,16 @@ class Subsystem : Object {
   void run();
   protected virtual
   void post_run() {}
+
+  internal
+  void
+  lib_pre_run() { this.pre_run(); }
+  internal
+  void
+  lib_run() { this.run(); }
+  internal
+  void
+  lib_post_run() { this.post_run(); }
 }
 
 }
