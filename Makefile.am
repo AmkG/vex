@@ -11,7 +11,11 @@ libvex_la_SOURCES = \
   src/component_col_base.vala \
   src/component_col_iterator.vala \
   src/entity.vala \
-  src/manager.vala
+  src/manager.vala \
+  src/subsystem.vala \
+  src/subsystem_par.vala \
+  src/subsystem_runner.vala \
+  src/subsystem_seq.vala
 
 libvex_la_CFLAGS = \
   $(GEE_CFLAGS) \
@@ -28,6 +32,7 @@ libvex_la_VALAFLAGS = \
   --library vex -H vex.h \
   --vapi vex.vapi \
   --vapidir=$(top_srcdir) \
-  --pkg config
+  --pkg config \
+  --target-glib=2.32
 
 ACLOCAL_AMFLAGS = -I m4
