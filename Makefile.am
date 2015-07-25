@@ -43,7 +43,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 check_PROGRAMS = \
   test/t001 \
-  test/t002
+  test/t002 \
+  test/t003
 check_VALAFLAGS = \
   --vapidir=$(top_srcdir) \
   --pkg vex
@@ -51,7 +52,8 @@ check_CFLAGS = \
   $(GLIB2_CFLAGS)
 check_LDADD = \
   libvex.la \
-  $(GLIB2_LIBS)
+  $(GLIB2_LIBS) \
+  $(GOBJECT2_LIBS)
 
 TESTS = $(check_PROGRAMS)
 
@@ -64,4 +66,9 @@ test_t002_SOURCES   = test/002.vala
 test_t002_VALAFLAGS = $(check_VALAFLAGS)
 test_t002_CFLAGS    = $(check_CFLAGS)
 test_t002_LDADD     = $(check_LDADD)
+
+test_t003_SOURCES   = test/003.vala
+test_t003_VALAFLAGS = $(check_VALAFLAGS)
+test_t003_CFLAGS    = $(check_CFLAGS)
+test_t003_LDADD     = $(check_LDADD)
 
