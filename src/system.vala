@@ -22,6 +22,7 @@ src/system.vala - Systems that operate on the entities
 */
 namespace VEX {
 
+public
 class System : Object {
   Subsystem main;
 
