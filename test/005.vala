@@ -6,6 +6,8 @@ using VEX;
 class Odd : Component { }
 class Even : Component { }
 
+int processed = 0;
+
 class OddSystem : Subsystem {
   unowned ComponentCol<Odd> odd_col;
 
@@ -19,6 +21,7 @@ class OddSystem : Subsystem {
   void
   run() {
     foreach (Entity e in odd_col) {
+      AtomicInt.inc(ref processed);
       stdout.printf("OddSystem: Processing: %d\n", e.id);
       if (e.id % 2 == 0) {
         stdout.printf("OddSystem: Not odd!\n");
@@ -41,6 +44,7 @@ class EvenSystem : Subsystem {
   void
   run() {
     foreach (Entity e in even_col) {
+      AtomicInt.inc(ref processed);
       stdout.printf("EvenSystem: Processing: %d\n", e.id);
       if (e.id % 2 != 0) {
         stdout.printf("EvenSystem: Not even!\n");
@@ -73,8 +77,27 @@ main() {
       .run_<EvenSystem>()
     .join()
     ;
-
+  stdout.printf("*** sboth.run().\n");
+  processed = 0;
   sboth.run();
+  stdout.printf("processed: %d\n", processed);
+  if (processed != NUMBER) {
+    stdout.printf( "** Expecting %d entities, but %d were processed\n"
+                 , NUMBER, processed);
+    return 1;
+  }
+
+  System sodd = create_system(manager)
+    .run_<OddSystem>();
+  stdout.printf("*** sodd.run().\n");
+  processed = 0;
+  sodd.run();
+  stdout.printf("processed: %d\n", processed);
+  if (processed != NUMBER / 2) {
+    stdout.printf( "** Expecting %d entities, but %d were processed\n"
+                 , NUMBER / 2, processed);
+    return 1;
+  }
 
   return 0;
 }
