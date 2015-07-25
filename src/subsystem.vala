@@ -67,6 +67,7 @@ class Subsystem : Object {
      block; if you need access to the manager
      while doing some initialization, override the
      init() virtual method.  */
+  public
   EntityManager? manager { public get; internal set; }
 
   internal unowned SubsystemRunner? runner = null;
