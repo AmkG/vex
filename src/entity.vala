@@ -31,18 +31,18 @@ class Entity {
   /* Entity ID.  */
   public int id;
   /* The manager that manages this.  */
-  public unowned EntityManager manager;
+  internal unowned EntityManager manager;
 
   /* Refcount for this object.  */
-  public int _rc;
+  internal int _rc;
   /* The allocator that manages this.
 
      We use an owning pointer to EntityAllocator because
      the allocator must live longer than the Entities
      it manages.  */
-  public EntityAllocator _allocator;
+  internal EntityAllocator _allocator;
   /* Used in the EntityAllocator to maintain the freelist.  */
-  public void* _next;
+  internal void* _next;
 
   /* Arrange so that the "normal" new Entity()
      expression calls Vex.EntityAllocator.alloc().  */
@@ -113,7 +113,7 @@ class Entity {
   }
 }
 
-public
+internal
 class EntityAllocator {
   /* The next free ID.  */
   int next_free;
