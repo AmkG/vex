@@ -31,5 +31,5 @@ PKG_CHECK_MODULES([GEE], [gee-1.0],,[
 # Checks for library functions.
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile test/Makefile])
 AC_OUTPUT

@@ -41,46 +41,4 @@ ACLOCAL_AMFLAGS = -I m4
 
 ###############################################################################
 
-check_PROGRAMS = \
-  test/t001 \
-  test/t002 \
-  test/t003 \
-  test/t004 \
-  test/t005
-check_VALAFLAGS = \
-  --vapidir=$(top_srcdir) \
-  --pkg vex
-check_CFLAGS = \
-  $(GLIB2_CFLAGS)
-check_LDADD = \
-  libvex.la \
-  $(GLIB2_LIBS) \
-  $(GOBJECT2_LIBS)
-
-TESTS = $(check_PROGRAMS)
-
-test_t001_SOURCES   = test/001.vala
-test_t001_VALAFLAGS = $(check_VALAFLAGS)
-test_t001_CFLAGS    = $(check_CFLAGS)
-test_t001_LDADD     = $(check_LDADD)
-
-test_t002_SOURCES   = test/002.vala
-test_t002_VALAFLAGS = $(check_VALAFLAGS)
-test_t002_CFLAGS    = $(check_CFLAGS)
-test_t002_LDADD     = $(check_LDADD)
-
-test_t003_SOURCES   = test/003.vala
-test_t003_VALAFLAGS = $(check_VALAFLAGS)
-test_t003_CFLAGS    = $(check_CFLAGS)
-test_t003_LDADD     = $(check_LDADD)
-
-test_t004_SOURCES   = test/004.vala
-test_t004_VALAFLAGS = $(check_VALAFLAGS)
-test_t004_CFLAGS    = $(check_CFLAGS)
-test_t004_LDADD     = $(check_LDADD)
-
-test_t005_SOURCES   = test/005.vala
-test_t005_VALAFLAGS = $(check_VALAFLAGS)
-test_t005_CFLAGS    = $(check_CFLAGS)
-test_t005_LDADD     = $(check_LDADD)
-
+SUBDIRS = . test
