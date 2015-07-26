@@ -207,6 +207,211 @@ attached to a component using `foreach`:
       // ...
     }
 
+It is safe to detach the component while iterating
+over its column; it is safe to detach the entity
+being iterated or any entity, or even destroy the
+entity or any entity:
+
+    foreach (Entity e in my_component_col) {
+      e.detach<MyComponent>();
+      my_component_col.detach(e);
+      e.destroy();
+    }
 
 
+Systems and Subsystems
+----------------------
 
+In the Entity Component System pattern, code is
+organized into systems.  Each system is focused on
+one or a few component types, and is written largely
+indepedently of each other.
+
+In VEX, a `System` is constructed by composing
+several `Subsystem`-derived types.
+
+All code that manipulates the entity component system
+should be defined in classes derived from `Subsystem`:
+
+    class Gravity : VEX.Subsystem {
+      unowned VEX.ComponentCol<Velocity> vel_col;
+
+      protected override
+      void
+      init() {
+        vel_col = manager.get_component_col<Velocity>();
+      }
+
+      protected override
+      void
+      run() {
+        foreach (Entity e in vel_col) {
+          vel_col.ref(e).vy -= 9.8;
+        }
+      }
+    }
+
+    class Thrusters : VEX.Subsystem {
+      unowned VEX.ComponentCol<Velocity> vel_col;
+      unowned VEX.ComponentCol<Engine> engine_col;
+
+      protected override
+      void
+      init() {
+        vel_col = manager.get_component_col<Velocity>();
+        engine_col = manager.get_component_col<Engine>();
+      }
+
+      protected override
+      void
+      run() {
+        foreach (Entity e in engine_col) {
+          var engine = engine_col.ref(e);
+          if (engine.enabled) {
+            vel_col.ref(e).vy += 15;
+          }
+        }
+      }
+    }
+
+You can then compose a system by using the public, static
+method `create_system`:
+
+    void main() {
+
+      var manager = new VEX.EntityManager();
+
+      var system = VEX.create_system(manager)
+        .begin()
+          .run_<Gravity>()
+          .run_<Thrusters>()
+        .end()
+        ;
+
+      while (true) {
+        system.run();
+      }
+    }
+
+What the above code means is that, whenever the system's
+`run` method is invoked, then first an instance of `Gravity`
+is executed, then when it completes, an instance of
+`Thrusters` is executed, then the system's `run` method
+returns.
+
+The object returned by `create_system` actually has two
+variants of `run_` method:
+
+      var system = VEX.create_system(manager)
+        .begin()
+          .run_<Gravity>()
+          .run(new Thrusters())
+        .end()
+        ;
+
+The `run_` method constructs the subsystem with a default
+`GLib.Object.new` constructor, while the `run` method
+accepts a subsystem as argument.  The latter method is
+useful for systems that need access to external objects.
+
+
+`Subsystem` Methods and Properties
+----------------------------------
+
+VEX `Subsystem` has a number of overridable methods and a
+few utility methods and properties.
+
+The read-only `manager` property is a reference to the
+`EntityManager` that the constructed system will operate
+on.  This property is not yet set at the `Subsystem`'s
+`construct` block.
+
+You may override the `init` method to do initialization.
+The `manager` property has been set before the `init`
+method is invoked, so any initialization of your
+`Subsystem` that requires knowledge of the `EntityManager`
+involved (such as acquiring component columns) should
+be done in the `init` method:
+
+    protected override
+    void init() { /* ... */ }
+
+You may oveerride the `pre_run` and `post_run` methods.
+When a `System` is `run`, first all of its `Subsystem`'s
+`pre_run` methods are run, then the core `run` methods,
+then the `post_run` methods.  You may use these methods
+for initialization and cleanup that needs to be done
+at each simulation step.
+
+    protected override
+    void pre_run() { /* ... */ }
+    protected override
+    void post_run() { /* ... */ }
+
+Overriding `init`, `pre_run`, and `post_run` is optional.
+
+You are required to override the abstract `run` method.
+The `run` method is the core of your subsystem:
+
+    protected override
+    void run() { /* ... */ }
+
+Finally, `Subsystem` provides a utility method, `subtask`,
+which can be used to execute any `void`-returning method
+that accepts no arguments.  This method can only be used
+within your `run` method:
+
+    protected override
+    void run() {
+      subtask(task1);
+      subtask(task2);
+    }
+    void task1() { /* ... */ }
+    void task2() { /* ... */ }
+
+The `subtask` method uses a thread pool to run subtasks
+in parallel.  The `run` method is not considered as having
+returned until all `subtask`s that were initiated inside
+it have completed.  This allows you to safely multithread
+parts of your overall system while ensuring that a
+`Subsystem` is completed before the next is initiated.
+
+
+Multithreaded Systems
+---------------------
+
+In addition to just running your `Subsystem`s one after
+another, a `System` can also run `Subsystem`s in parallel.
+
+To do so, use `fork` and `join` on creating systems:
+
+    System s = create_system(m)
+      .begin()
+        .fork()
+           .run_<S1>()
+           .run_<S2>()
+        .join()
+        .run_<S3>()
+      .end()
+      ;
+
+The above means that `S1` and `S2` are executed in
+parallel, then when they and all of their subtasks have
+completed, `S3` is executed.
+
+You may nest `fork`-`join` and `begin`-`end` to any
+depth, but every `fork` must be closed by `join` and every
+`begin` must be closed by `end`.
+
+You are responsible for ensuring that `Subsystem`s executed
+in parallel do not step on each other's toes; for example,
+use mutexes or read-write locks.  As a general rule, if a
+`Subsystem` writes to a component field that another
+`Subsystem` reads or writes, you can't run them in parallel.
+
+A possible exception might be component fields that are
+operated on using commutative operations, such as a `velocity`
+field that `Gravity` and `Thruster` subsystems just add or
+subtract to; as long as access to the field is locked, you
+can do them in parallel, then read the final velocity in
+another subsystem in sequence to them.
