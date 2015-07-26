@@ -68,7 +68,7 @@ class Subsystem : Object {
      while doing some initialization, override the
      init() virtual method.  */
   public
-  EntityManager? manager { public get; internal set; }
+  unowned EntityManager? manager { public get; internal set; }
 
   internal unowned SubsystemRunner? runner = null;
 

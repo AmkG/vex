@@ -24,13 +24,15 @@ namespace VEX {
 
 public
 class System : Object {
+  EntityManager manager;
   Subsystem main;
 
   ThreadPool<SubsystemTaskWrapper> tp;
 
   internal
-  System(Subsystem main) {
-    this.main = main;
+  System(owned EntityManager manager, owned Subsystem main) {
+    this.manager = (owned) manager;
+    this.main = (owned) main;
     try {
       tp = new ThreadPool<SubsystemTaskWrapper>.with_owned_data
         ( /*func*/        process1

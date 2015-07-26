@@ -61,9 +61,9 @@ class SystemFactoryTop {
   public
   System
   run (owned Subsystem s) {
-    s.manager = (owned) m;
+    s.manager = m;
     s.lib_init();
-    return new System((owned) s);
+    return new System((owned) m, (owned) s);
   }
   public
   System
