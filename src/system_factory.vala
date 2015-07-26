@@ -63,7 +63,7 @@ class SystemFactoryTop {
   run (owned Subsystem s) {
     s.manager = (owned) m;
     s.lib_init();
-    return new System(s);
+    return new System((owned) s);
   }
   public
   System
@@ -102,7 +102,7 @@ class SystemFactorySeq<Parent> {
   public
   unowned SystemFactorySeq<Parent>
   run(owned Subsystem s) {
-    seq.add(s);
+    seq.add((owned) s);
     return this;
   }
 
@@ -154,7 +154,7 @@ class SystemFactoryPar<Parent> {
   public
   unowned SystemFactoryPar<Parent>
   run(owned Subsystem s) {
-    par.add(s);
+    par.add((owned) s);
     return this;
   }
   public

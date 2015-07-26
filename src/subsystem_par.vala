@@ -28,8 +28,8 @@ class SubsystemPar : Subsystem {
 
   public
   void
-  add(Subsystem subsystem) {
-    subsystems += subsystem;
+  add(owned Subsystem subsystem) {
+    subsystems += (owned) subsystem;
   }
 
   protected override
