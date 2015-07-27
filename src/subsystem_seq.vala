@@ -41,26 +41,14 @@ class SubsystemSeq : Subsystem {
   }
 
   protected override
-  void pre_run() {
-    foreach (var subsystem in subsystems) {
-      subsystem.pre_run();
-    }
-  }
-  protected override
   void
   run() {
+    var sub_runner = new SubsystemRunner.with_parent_runner(runner);
     foreach (var subsystem in subsystems) {
-      var sub_runner = new SubsystemRunner.with_parent_runner(runner);
       subsystem.runner = sub_runner;
       subsystem.run();
       sub_runner.wait_completion();
-    }
-  }
-  protected override
-  void post_run() {
-    foreach (var subsystem in subsystems) {
       subsystem.runner = null;
-      subsystem.post_run();
     }
   }
 }

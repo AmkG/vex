@@ -39,20 +39,14 @@ Multithreaded systems:
 While building a multithreaded system out of subsystems,
 be aware of the following:
 
-1.  pre_run and post_run are run sequentially, never in
-    parallel.  Only the actual core run() method is
-    run in parallel.  All pre_run() are called before any
-    run(), and all run() has completed before any
-    post_run().
-
-2.  If you run two subsystems A and B in parallel where
+1.  If you run two subsystems A and B in parallel where
     A detaches components that B is reading, then
     B may acquire the component via a ref<>, then A
     detaches it, then B will continue (the component
     will still be live, but may contain stale state).
     You should handle this possibility yourself.
 
-3.  Obviously if you have multiple parallel subsystems
+2.  Obviously if you have multiple parallel subsystems
     where one or more perform writes to components,
     you should handle this yourself.
     
@@ -90,12 +84,8 @@ class Subsystem : Object {
   protected virtual
   void init() { }
 
-  protected virtual
-  void pre_run() {}
   protected abstract
   void run();
-  protected virtual
-  void post_run() {}
 
   internal inline
   void
@@ -103,13 +93,7 @@ class Subsystem : Object {
 
   internal inline
   void
-  lib_pre_run() { this.pre_run(); }
-  internal inline
-  void
   lib_run() { this.run(); }
-  internal inline
-  void
-  lib_post_run() { this.post_run(); }
 }
 
 }

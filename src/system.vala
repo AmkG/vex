@@ -40,21 +40,19 @@ class System : Object {
         , /*exclusive*/   false
         );
     } catch (ThreadError ignored) { }
+    this.main.manager = this.manager;
+    this.main.lib_init();
   }
 
   public
   void
   run() {
-    main.lib_pre_run();
-
     SubsystemRunner runner = new SubsystemRunner(tp);
     main.runner = runner;
     main.lib_run();
     runner.wait_completion();
     main.runner = null;
     runner = null;
-
-    main.lib_post_run();
   }
 
   private

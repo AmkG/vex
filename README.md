@@ -336,20 +336,6 @@ be done in the `init` method:
     protected override
     void init() { /* ... */ }
 
-You may oveerride the `pre_run` and `post_run` methods.
-When a `System` is `run`, first all of its `Subsystem`'s
-`pre_run` methods are run, then the core `run` methods,
-then the `post_run` methods.  You may use these methods
-for initialization and cleanup that needs to be done
-at each simulation step.
-
-    protected override
-    void pre_run() { /* ... */ }
-    protected override
-    void post_run() { /* ... */ }
-
-Overriding `init`, `pre_run`, and `post_run` is optional.
-
 You are required to override the abstract `run` method.
 The `run` method is the core of your subsystem:
 

@@ -41,26 +41,11 @@ class SubsystemPar : Subsystem {
   }
 
   protected override
-  void pre_run() {
-    foreach (var subsystem in subsystems) {
-      subsystem.pre_run();
-      subsystem.runner = runner;
-    }
-  }
-
-  protected override
   void
   run() {
     foreach (var subsystem in subsystems) {
+      subsystem.runner = runner;
       subtask (subsystem.run);
-    }
-  }
-
-  protected override
-  void post_run() {
-    foreach (var subsystem in subsystems) {
-      subsystem.runner = null;
-      subsystem.post_run();
     }
   }
 }
