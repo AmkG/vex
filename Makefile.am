@@ -3,6 +3,16 @@ vapidir = $(datadir)/vala/vapi
 dist_vapi_DATA = vex.vapi
 include_HEADERS = vex.h
 
+pkgconfigdir = $(libdir)/pkgconfig
+nodist_pkgconfig_DATA = vex.pc
+vex.pc : $(srcdir)/vex.pc.in
+	sed -e 's![@]prefix[@]!$(prefix)!g' \
+	    -e 's![@]exec_prefix[@]!$(exec_prefix)!g' \
+	    -e 's![@]includedir[@]!$(includedir)!g' \
+	    -e 's![@]libdir[@]!$(libdir)!g' \
+	    -e 's![@]PACKAGE_VERSION[@]!$(PACKAGE_VERSION)!g' \
+	    $< > $@
+
 lib_LTLIBRARIES = libvex.la
 
 libvex_la_SOURCES = \

@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@
+libdir=@libdir@
+
+Name: VEX
+Description: A Vala Entity Component System library.
+URL: http://github.com/AmkG/vex
+Version: @PACKAGE_VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir} -lvex
+Requires: gee-1.0 glib-2.0 gobject-2.0

@@ -31,3 +31,4 @@ INSTALL
 config.h
 config.h.in
 m4
+vex.pc
