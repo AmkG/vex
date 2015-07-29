@@ -44,8 +44,10 @@ class SubsystemPar : Subsystem {
   void
   run() {
     foreach (var subsystem in subsystems) {
-      subsystem.runner = runner;
-      subtask (subsystem.run);
+      var my_seq_point = next_seq_point;
+      VEX.TP.add(() => {
+        subsystem.lib_run((owned) my_seq_point);
+      });
     }
   }
 }

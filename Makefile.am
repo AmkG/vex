@@ -22,6 +22,7 @@ libvex_la_SOURCES = \
   src/component_col_iterator.vala \
   src/entity.vala \
   src/manager.vala \
+  src/seq_point.vala \
   src/subsystem.vala \
   src/subsystem_par.vala \
   src/subsystem_runner.vala \

@@ -1,6 +1,6 @@
 /*
-src/subsystem_runner.vala - A class handling subsystem
-  subtask completion.
+seq_point.vala - Define a sequence point, which, when finalized,
+  puts a task on the static thread pool.
 
     Copyright 2015 Alan Manuel K. Gloria
 
@@ -20,21 +20,18 @@ src/subsystem_runner.vala - A class handling subsystem
     along with VEX.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-
 namespace VEX {
 
-public delegate
-void SubsystemTask();
-
-/* Delegates can't be generic types.  Use the
-   wrapper class below instead.  */
-[Compact]
 internal
-class SubsystemTaskWrapper {
-  public SubsystemTask task;
-  public
-  SubsystemTaskWrapper(owned SubsystemTask task) {
+class SeqPoint {
+  SubsystemTask task;
+  internal
+  SeqPoint(owned SubsystemTask task) {
     this.task = (owned) task;
+  }
+
+  ~SeqPoint() {
+    VEX.TP.add((owned) task);
   }
 }
 

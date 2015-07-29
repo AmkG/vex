@@ -64,7 +64,7 @@ class Subsystem : Object {
   public
   unowned EntityManager? manager { public get; internal set; }
 
-  internal unowned SubsystemRunner? runner = null;
+  internal SeqPoint? next_seq_point;
 
   /* Launches a subtask in parallel with the subsystem's
      run method.  The system containing this subsystem
@@ -77,8 +77,15 @@ class Subsystem : Object {
   protected
   void
   subtask (owned SubsystemTask task) {
-    assert (runner != null);
-    runner.run ((owned) task);
+    assert(next_seq_point != null);
+    var my_seq_point = next_seq_point;
+    VEX.TP.add(() => {
+      try {
+        task();
+      } finally {
+        my_seq_point = null;
+      }
+    });
   }
 
   protected virtual
@@ -93,7 +100,14 @@ class Subsystem : Object {
 
   internal inline
   void
-  lib_run() { this.run(); }
+  lib_run(owned SeqPoint seq_point) {
+    next_seq_point = (owned) seq_point;
+    try {
+      this.run();
+    } finally {
+      next_seq_point = null;
+    }
+  }
 }
 
 }

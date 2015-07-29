@@ -43,12 +43,14 @@ class SubsystemSeq : Subsystem {
   protected override
   void
   run() {
-    var sub_runner = new SubsystemRunner();
-    foreach (var subsystem in subsystems) {
-      subsystem.runner = sub_runner;
-      subsystem.run();
-      sub_runner.wait_completion();
-      subsystem.runner = null;
+    /* Traverse in reverse order.  */
+    for (int n = 0; n < subsystems.length; ++n) {
+      var i = subsystems.length - n - 1;
+      var subsystem = subsystems[i];
+      var my_seq_point = (!) (owned) next_seq_point;
+      next_seq_point = new SeqPoint(() => {
+        subsystem.lib_run((owned) my_seq_point);
+      });
     }
   }
 }
