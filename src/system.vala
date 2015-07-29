@@ -27,19 +27,10 @@ class System : Object {
   EntityManager manager;
   Subsystem main;
 
-  ThreadPool<SubsystemTaskWrapper> tp;
-
   internal
   System(owned EntityManager manager, owned Subsystem main) {
     this.manager = (owned) manager;
     this.main = (owned) main;
-    try {
-      tp = new ThreadPool<SubsystemTaskWrapper>.with_owned_data
-        ( /*func*/        process1
-        , /*max_threads*/ (int) get_num_processors()
-        , /*exclusive*/   false
-        );
-    } catch (ThreadError ignored) { }
     this.main.manager = this.manager;
     this.main.lib_init();
   }
@@ -47,7 +38,7 @@ class System : Object {
   public
   void
   run() {
-    SubsystemRunner runner = new SubsystemRunner(tp);
+    SubsystemRunner runner = new SubsystemRunner();
     main.runner = runner;
     main.lib_run();
     runner.wait_completion();

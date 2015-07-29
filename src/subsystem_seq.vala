@@ -43,7 +43,7 @@ class SubsystemSeq : Subsystem {
   protected override
   void
   run() {
-    var sub_runner = new SubsystemRunner.with_parent_runner(runner);
+    var sub_runner = new SubsystemRunner();
     foreach (var subsystem in subsystems) {
       subsystem.runner = sub_runner;
       subsystem.run();

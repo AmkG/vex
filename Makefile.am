@@ -27,7 +27,8 @@ libvex_la_SOURCES = \
   src/subsystem_runner.vala \
   src/subsystem_seq.vala \
   src/system.vala \
-  src/system_factory.vala
+  src/system_factory.vala \
+  src/thread_pool.vala
 
 libvex_la_CFLAGS = \
   $(GEE_CFLAGS) \

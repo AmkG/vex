@@ -41,18 +41,12 @@ class SubsystemTaskWrapper {
 [Compact]
 internal
 class SubsystemRunner {
-  public unowned ThreadPool<SubsystemTaskWrapper> tp;
   public Mutex mtx = Mutex();
   public Cond cond = Cond();
   public int rc = 0;
 
   internal
-  SubsystemRunner(ThreadPool<SubsystemTaskWrapper> tp) {
-    this.tp = tp;
-  }
-  internal
-  SubsystemRunner.with_parent_runner(SubsystemRunner runner) {
-    this.tp = runner.tp;
+  SubsystemRunner() {
   }
 
   internal
@@ -73,17 +67,13 @@ class SubsystemRunner {
   void
   exec_run (SubsystemRunner runner, owned SubsystemTask task) {
     runner.countup();
-    try {
-      runner.tp.add(new SubsystemTaskWrapper (() => {
-        try {
-          task();
-        } finally {
-          runner.countdown();
-        }
-      }));
-    } catch (ThreadError ignored) {
-      /* Ignore ThreadError.  */
-    }
+    VEX.TP.add(() => {
+      try {
+        task();
+      } finally {
+        runner.countdown();
+      }
+    });
   }
   private
   void
