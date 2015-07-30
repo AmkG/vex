@@ -42,7 +42,9 @@ libvex_la_LIBADD = \
   $(GOBJECT2_LIBS)
 
 libvex_la_VALAFLAGS = \
-  --pkg gee-1.0 \
+  $(GEE_VALAFLAGS) \
+  $(GLIB2_VALAFLAGS) \
+  $(GOBJECT_VALAFLAGS) \
   --library vex -H vex.h \
   --vapi vex.vapi \
   --vapidir=$(top_srcdir) \

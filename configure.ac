@@ -14,13 +14,13 @@ AM_PROG_CC_C_O
 AM_PROG_VALAC
 
 # Checks for libraries.
-PKG_CHECK_MODULES([GLIB2], [glib-2.0],,[
+VALA_CHECK_MODULES([GLIB2], [glib-2.0],,[
   AC_MSG_ERROR([GLIB2 not found.])
 ])
-PKG_CHECK_MODULES([GOBJECT2], [gobject-2.0],,[
+VALA_CHECK_MODULES([GOBJECT2], [gobject-2.0],,[
   AC_MSG_ERROR([GOBJECT2 not found.])
 ])
-PKG_CHECK_MODULES([GEE], [gee-1.0],,[
+VALA_CHECK_MODULES([GEE], [gee-1.0],,[
   AC_MSG_ERROR([GEE not found.])
 ])
 
